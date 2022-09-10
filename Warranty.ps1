@@ -1,9 +1,10 @@
 # Dell Warranty Check
-# V1.0.0
+# V1.0.1
 # Sidhy (Jorrit)
 
 
 $Script:DebugProxy = $false # Set to true to use local proxy for debugging
+$Script:UseSystemProxy = $true
 $Script:UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0"
 
 $Script:Url_Base = "https://www.dell.com"
@@ -142,6 +143,11 @@ function DellPostRequest
         if ($Script:DebugProxy)
         {
             $r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -Proxy "http://127.0.0.1:8080"
+        }
+        elseif ($Script:UseSystemProxy)
+        {
+            $proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($url)
+            $r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -Proxy $proxy -ProxyUseDefaultCredentials
         }
         else 
         {
