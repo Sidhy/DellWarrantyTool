@@ -14,6 +14,8 @@ $Script:Url_AddProduct = "${Url_Base}/support/mps/en-uk/saveproductsusingtag"
 
 
 #region disable ssl check
+if ($Script:DebugProxy)
+{
 add-type @"
     using System.Net;
     using System.Security.Cryptography.X509Certificates;
@@ -26,6 +28,7 @@ add-type @"
     }
 "@
 [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+}
 #endregion
 
 class Asset
