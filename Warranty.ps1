@@ -72,15 +72,19 @@ function ProcessCookie
     {
         if ($line.Length -gt 0)
         {
-            $var = $line.split("=")[0]
+            try
+            {
+                $var = $line.split("=")[0]
 
-            $start = $line.IndexOf("=")+1
-            $end = $line.Length-$start
-            $val = $line.Substring($start,$end)
-            $val = [System.Web.HttpUtility]::UrlEncode($val) # Url encoding
-            $c = New-Object System.Net.Cookie($var,$val ,'/','www.dell.com')
-            $Script:WebSession.Cookies.Add($c)
-            
+                $start = $line.IndexOf("=")+1
+                $end = $line.Length-$start
+                $val = $line.Substring($start,$end)
+                $val = [System.Web.HttpUtility]::UrlEncode($val) # Url encoding
+                $c = New-Object System.Net.Cookie($var,$val ,'/','.dell.com')
+                $Script:WebSession.Cookies.Add($c)
+            }
+            catch
+            { continue }
 
         }
     }
