@@ -1,5 +1,5 @@
 # Dell Warranty Check
-# V1.0.1
+# V1.0.2
 # Sidhy (Jorrit)
 
 
