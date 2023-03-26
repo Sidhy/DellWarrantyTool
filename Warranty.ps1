@@ -254,7 +254,17 @@ function LoadDellAssets
             }
             elseif ($RequestPage -ge $requests) {
                 Write-Progress -Activity "Loading Assets from Dell" -Status "$progress% Complete:" -PercentComplete $progress -Completed
-                return $true
+
+                if ($total -eq $Script:AssetList.Count)
+                {
+                    Write-Host "$total successfully assets loaded"
+                    return $true
+                }
+                else
+                {
+                    Write-Error "Not all assets are loaded, please try again"
+                    return $false
+                }
             }
 
         }
