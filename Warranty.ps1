@@ -4,7 +4,7 @@
 
 
 $Script:DebugProxy = $false # Set to true to use local proxy for debugging
-$Script:UseSystemProxy = $true
+$Script:UseSystemProxy = $false
 $Script:UserAgent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:104.0) Gecko/20100101 Firefox/104.0"
 
 $Script:Url_Base = "https://www.dell.com"
@@ -423,6 +423,7 @@ function DellAssetMenu
         Write-Host "2. Load assets from Dell"
         Write-Host "3. Upload assets to Dell"
         Write-Host "4. Save asset info to file"
+        Write-Host "5. Enable System proxy"
         Write-Host ""
         Write-Host "8. Clear all assets from Dell"
         Write-Host "0. Exit"
@@ -434,6 +435,7 @@ function DellAssetMenu
             2 { LoadDellAssets ; Read-Host "Press enter to continue" }
             3 { UploadDellAssets }
             4 { SaveDellAssetsMenuEntry }
+            5 { $Script:UseSystemProxy = true }
             8 { Clear-DellProducts }
             0 { exit }
             default { continue }
