@@ -135,7 +135,7 @@ function DellPostRequest
         "Accept" = "*/*";
         'Accept-Language' = 'en-US,en;q=0.5';
         'Accept-Encoding'='gzip, deflate';
-        'Referer'='https://www.dell.com/support/mps/nl-nl/myproducts';
+        'Referer'='https://www.dell.com/support/mps/en-uk/myproducts';
         'Content-Type'='application/json; charset=utf-8';
         'Mps-Lock'='True';
         'X-Requested-With'='XMLHttpRequest';
@@ -143,31 +143,43 @@ function DellPostRequest
         'Sec-Fetch-Mode'='cors';
         'Sec-Fetch-Site'='same-origin';
     }
-    try {
-        if ($Script:DebugProxy)
+	
+	$retry_count = 0
+	while ($retry_count -lt 3)
+	{
+        try 
         {
-            $r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -Proxy "http://127.0.0.1:8080"
-        }
-        elseif ($Script:UseSystemProxy)
-        {
-            $proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($url)
-            $r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -Proxy $proxy -ProxyUseDefaultCredentials
-        }
-        else 
-        {
-            $r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data
-        }
+			if ($Script:DebugProxy)
+			{
+				$r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -Proxy "http://127.0.0.1:8080" -TimeoutSec 10
+			}
+			elseif ($Script:UseSystemProxy)
+			{
+				$proxy = ([System.Net.WebRequest]::GetSystemWebproxy()).GetProxy($url)
+				$r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -Proxy $proxy -ProxyUseDefaultCredentials -TimeoutSec 10
+			}
+			else 
+			{
+				$r = Invoke-WebRequest -Uri $url -WebSession $Script:WebSession -UserAgent $Script:UserAgent -Headers $headers -Method Post -Body $data -TimeoutSec 10
+			}
 
-        if ($r.StatusCode -eq 200)
-        {
-            return $r
+			if ($r.StatusCode -eq 200)
+			{
+				return $r
+			}
         }
-    }
-    catch {
-        Write-Error "DellPostRequest  Error:" 
-        Write-Error $_
-        return $null
-    }
+        catch [System.Net.WebException] {
+            Write-Warning "DellPostRequest  WebException:" 
+            Write-Warning $_
+             $retry_count++
+	    }
+        catch {
+            Write-Error "DellPostRequest  Error:" 
+            Write-Error $_
+            return $null
+        }
+	}
+	
 }
 
 function ProcessAssetList 
